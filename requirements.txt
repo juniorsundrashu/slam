@@ -12,7 +12,6 @@ google-auth-oauthlib
 gunicorn<=20.1.0
 hachoir
 js2py
-lxml<=4.8.0
 pillow<=9.3.0
 psutil
 psycopg2-binary

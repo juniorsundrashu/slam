@@ -40,7 +40,6 @@ if CONFIG_FILE_URL is not None:
     if res.status_code == 200:
         with open('config.env', 'wb+') as f:
             f.write(res.content)
-            f.close()
     else:
         logging.error(res.status_code)
 
@@ -48,10 +47,15 @@ load_dotenv('config.env')
 
 SERVER_PORT = os.environ.get('SERVER_PORT', None)
 PORT = os.environ.get('PORT', SERVER_PORT)
-web = subprocess.Popen([f"gunicorn wserver:start_server --bind 0.0.0.0:{PORT} --worker-class aiohttp.GunicornWebWorker"], shell=True)
+web = subprocess.Popen(["gunicorn", "wserver:start_server", "--bind", f"0.0.0.0:{PORT}", "--worker-class", "aiohttp.GunicornWebWorker"])
 time.sleep(1)
-alive = subprocess.Popen(["python3", "alive.py"])
-subprocess.run(["mkdir", "-p", "qBittorrent/config"])
+
+try:
+    alive = subprocess.Popen(["python3", "alive.py"])
+except FileNotFoundError:
+    alive = subprocess.Popen(["python", "alive.py"])
+
+os.makedirs("qBittorrent/config", exist_ok=True)
 subprocess.run(["cp", "qBittorrent.conf", "qBittorrent/config/qBittorrent.conf"])
 subprocess.run(["qbittorrent-nox", "-d", "--profile=."])
 Interval = []
